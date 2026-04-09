@@ -1,14 +1,42 @@
 #!/bin/bash
 set -e
 
-# Move from auto-install/ up to the repo root (where index.html lives)
-cd "$(dirname "$0")/.."
-PROJECT_DIR="$(pwd)"
+# This script lives in <extracted-zip>/auto-install/
+# We use the location of TEAM_URL.txt (in the same folder) to figure out
+# which team's repo to clone — that way it works no matter what the
+# extracted folder is named.
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+EXTRACTED_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 echo ""
 echo "🚀 Nido Hack '26 — Auto Install (Mac)"
 echo "======================================"
-echo "Project folder: $PROJECT_DIR"
+echo ""
+
+# 0. Figure out which team repo to clone
+#    Priority 1: TEAM_URL.txt (one line, the HTTPS git URL)
+#    Priority 2: derive from the extracted folder name
+TEAM_URL=""
+if [ -f "$SCRIPT_DIR/TEAM_URL.txt" ]; then
+  TEAM_URL=$(head -n1 "$SCRIPT_DIR/TEAM_URL.txt" | tr -d '[:space:]')
+fi
+
+if [ -z "$TEAM_URL" ]; then
+  # Fallback: extract team name from the parent folder name
+  # GitHub ZIPs unzip as "nido_hack_26_team-XX-main" — strip the "-main" suffix.
+  FOLDER_NAME="$(basename "$EXTRACTED_DIR")"
+  TEAM_NAME="${FOLDER_NAME%-main}"
+  TEAM_URL="https://github.com/okostec-events/${TEAM_NAME}.git"
+  echo "⚠️  TEAM_URL.txt not found, guessing from folder name: $TEAM_NAME"
+fi
+
+# Derive a clean team name (last path segment of the URL, no .git)
+TEAM_NAME="$(basename "$TEAM_URL" .git)"
+CLONE_DIR="$HOME/Documents/GitHub/$TEAM_NAME"
+
+echo "Team repo:    $TEAM_URL"
+echo "Will clone to: $CLONE_DIR"
 echo ""
 
 # 1. Install Homebrew if missing
@@ -58,28 +86,44 @@ else
   brew install git
 fi
 
-# 6. Make sure 'code' CLI is available (VS Code must expose its CLI shim)
+# 6. Clone (or update) the team repo into ~/Documents/GitHub/<team>/
+echo ""
+mkdir -p "$HOME/Documents/GitHub"
+if [ -d "$CLONE_DIR/.git" ]; then
+  echo "✓ Repo already cloned, pulling latest changes..."
+  git -C "$CLONE_DIR" pull --ff-only || echo "  (skipping pull — local changes present)"
+else
+  echo "→ Cloning $TEAM_URL ..."
+  git clone "$TEAM_URL" "$CLONE_DIR"
+fi
+
+# 7. Make sure 'code' CLI is available (VS Code must expose its CLI shim)
 if ! command -v code &> /dev/null; then
   echo ""
   echo "⚠️  The 'code' command is not in your PATH yet. To install it:"
   echo "    Open VS Code → Cmd+Shift+P → 'Shell Command: Install code command in PATH'"
   echo "    Then re-run this script."
-  open -a "Visual Studio Code" "$PROJECT_DIR"
+  open -a "Visual Studio Code" "$CLONE_DIR"
   exit 0
 fi
 
-# 7. Install Cline AI extension (idempotent — skips if already installed)
+# 8. Install Cline AI extension (idempotent — skips if already installed)
 echo ""
 echo "→ Installing Cline AI extension..."
 code --install-extension saoudrizwan.claude-dev
 
-# 8. Open the project in VS Code
+# 9. Open the cloned repo in VS Code (NOT the extracted ZIP folder)
 echo ""
 echo "→ Opening project in VS Code..."
-code "$PROJECT_DIR"
+code "$CLONE_DIR"
 
 echo ""
-echo "✅ Done! VS Code should now be open."
+echo "✅ Done! VS Code should now be open with your team's repo:"
+echo "   $CLONE_DIR"
+echo ""
 echo "   Next: in VS Code, double-click 'index.html' in the left sidebar"
 echo "   to start the Hackathon Clicker game."
+echo ""
+echo "   To push changes to your team, open GitHub Desktop, sign in,"
+echo "   then File → Add Local Repository → choose the folder above."
 echo ""

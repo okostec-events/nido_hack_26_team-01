@@ -11,6 +11,8 @@ instead of manually installing 4 separate apps.
 - **Git** — version control
 - **Cline** — AI helper extension for VS Code
 
+It then **clones your team's repo** to `~/Documents/GitHub/<team-name>/` so your whole team can collaborate on the same code.
+
 ## How to use it
 
 1. **Make sure you have internet** — the script will download ~400 MB of apps
@@ -19,7 +21,15 @@ instead of manually installing 4 separate apps.
    - **Windows**: `setup-windows.bat`
 3. **Wait ~5 minutes**. You'll see progress in the terminal window that opens.
    The script will ask for your Mac password once (to install Homebrew) — that is normal.
-4. **VS Code opens automatically** when it's done. Double-click `index.html` in the left sidebar to start the Hackathon Clicker game.
+4. **VS Code opens automatically** when it's done, with your team's cloned repo loaded. Double-click `index.html` in the left sidebar to start the Hackathon Clicker game.
+
+## Which team repo does the script clone?
+
+The script reads `TEAM_URL.txt` (in this folder) to know which repo belongs to your team. **Don't edit or delete that file.**
+
+If `TEAM_URL.txt` is missing for any reason, the script falls back to guessing your team from the folder name — but the config file is the reliable path.
+
+> ⚠️ **If a friend on a different team gives you their ZIP**, your script will clone *their* team's repo (not yours). If that happens, ask an organizer to fix it manually in GitHub Desktop, or just download a fresh ZIP from your own welcome email.
 
 ## Running it at home before the event (recommended)
 
