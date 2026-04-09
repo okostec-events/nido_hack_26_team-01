@@ -17,18 +17,26 @@ echo ""
 # 0. Figure out which team repo to clone
 #    Priority 1: TEAM_URL.txt (one line, the HTTPS git URL)
 #    Priority 2: derive from the extracted folder name
+#
+#    Note: on macOS Sequoia, scripts running from ~/Downloads/ may not
+#    be able to read sibling files due to TCC restrictions, even for
+#    simple text files. The `2>/dev/null` on `head` suppresses the
+#    expected "Operation not permitted" stderr noise; the empty result
+#    falls through cleanly to the folder-name fallback below.
 TEAM_URL=""
 if [ -f "$SCRIPT_DIR/TEAM_URL.txt" ]; then
-  TEAM_URL=$(head -n1 "$SCRIPT_DIR/TEAM_URL.txt" | tr -d '[:space:]')
+  TEAM_URL=$(head -n1 "$SCRIPT_DIR/TEAM_URL.txt" 2>/dev/null | tr -d '[:space:]')
 fi
 
 if [ -z "$TEAM_URL" ]; then
-  # Fallback: extract team name from the parent folder name
-  # GitHub ZIPs unzip as "nido_hack_26_team-XX-main" — strip the "-main" suffix.
+  # Fallback: extract team name from the parent folder name.
+  # GitHub ZIPs unzip as "nido_hack_26_team-XX-main" — strip the "-main"
+  # suffix. This is the primary path on macOS Sequoia (where the
+  # TEAM_URL.txt read above is blocked by TCC).
   FOLDER_NAME="$(basename "$EXTRACTED_DIR")"
   TEAM_NAME="${FOLDER_NAME%-main}"
   TEAM_URL="https://github.com/okostec-events/${TEAM_NAME}.git"
-  echo "⚠️  TEAM_URL.txt not found, guessing from folder name: $TEAM_NAME"
+  echo "ℹ️  Using folder name to find your team repo: $TEAM_NAME"
 fi
 
 # Derive a clean team name (last path segment of the URL, no .git)
