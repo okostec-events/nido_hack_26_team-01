@@ -17,11 +17,24 @@ It then **clones your team's repo** to `~/Documents/GitHub/<team-name>/` so your
 
 1. **Make sure you have internet** — the script will download ~400 MB of apps
 2. **Double-click the script for your computer**:
-   - **Mac**: `setup-mac.command` (right-click → Open the first time if Mac asks about "unidentified developer")
+   - **Mac**: `setup-mac.command`
    - **Windows**: `setup-windows.bat`
-3. **Wait ~5 minutes**. You'll see progress in the terminal window that opens.
+3. **If you see a security warning on Mac** (*"Apple could not verify ... is free of malware"*), that's expected — our script is unsigned. It is safe. To run it anyway:
+   1. Click **Done** on the warning (do NOT click "Move to Trash")
+   2. Open **System Settings → Privacy & Security**
+   3. Scroll down to the **Security** section — you'll see *"setup-mac.command was blocked..."* with an **Open Anyway** button — click it
+   4. Enter your Mac password if asked, then double-click `setup-mac.command` again. This time it runs.
+4. **Wait ~5 minutes**. You'll see progress in the terminal window that opens.
    The script will ask for your Mac password once (to install Homebrew) — that is normal.
-4. **VS Code opens automatically** when it's done, with your team's cloned repo loaded. Double-click `index.html` in the left sidebar to start the Hackathon Clicker game.
+5. **VS Code opens automatically** when it's done, with your team's cloned repo loaded. Double-click `index.html` in the left sidebar to start the Hackathon Clicker game.
+
+> **Note for advanced users**: if the click-based path above doesn't work or you'd prefer to skip the Privacy & Security prompt entirely, open Terminal (press `Cmd+Space`, type "terminal", hit Enter) and paste this command (replace `XX` with your team number, e.g. `02`):
+>
+> ```
+> bash -c "$(curl -fsSL https://raw.githubusercontent.com/okostec-events/nido_hack_26_team-01/main/auto-install/setup-mac-bootstrap.sh)" "" XX
+> ```
+>
+> This downloads + runs the same installer without any security prompts (Terminal-downloaded files are not quarantined by macOS).
 
 ## Which team repo does the script clone?
 

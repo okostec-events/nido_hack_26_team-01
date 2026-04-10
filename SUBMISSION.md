@@ -4,11 +4,13 @@ Fill this in before the deadline and push it to your repo.
 
 ## Team
 
-| Team name |
-| Member 1 |
-| Member 2 |
-| Member 3 | |
-| Member 4 | |
+| Field     | Value |
+|-----------|-------|
+| Team name |       |
+| Member 1  |       |
+| Member 2  |       |
+| Member 3  |       |
+| Member 4  |       |
 
 ---
 
