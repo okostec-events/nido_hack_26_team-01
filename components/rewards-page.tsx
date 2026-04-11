@@ -10,6 +10,14 @@ export function RewardsPage() {
 
   return (
     <div className="flex flex-col gap-4 pb-24">
+      {/* Header */}
+      <div>
+        <h1 className="text-xl font-semibold text-foreground">Rewards</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Redeem points for real-world perks
+        </p>
+      </div>
+
       {/* Sub-tabs */}
       <div className="flex items-center gap-1 p-1 bg-secondary/50 rounded-lg">
         <button

@@ -65,6 +65,25 @@ export interface Reward {
   partner?: string
 }
 
+export interface LeaderboardEntry {
+  id: string
+  name: string
+  avatar: string
+  points: number
+  levelTitle: string
+}
+
+// Mock leaderboard — Alex (2 840 pts) sits at rank 4, 60 pts behind rank 3.
+// One Energy action (+80 pts) → rank 3; a second one → rank 2 + level-up to "Impact Leader".
+export const mockLeaderboard: LeaderboardEntry[] = [
+  { id: "lb_1", name: "Sarah Chen",      avatar: "SC", points: 3200, levelTitle: "Impact Leader" },
+  { id: "lb_2", name: "Marcus Johnson",  avatar: "MJ", points: 2980, levelTitle: "Advocate"      },
+  { id: "lb_3", name: "Emily Rodriguez", avatar: "ER", points: 2900, levelTitle: "Advocate"      },
+  // Alex Martinez (user_1) at 2 840 is inserted dynamically by app-context
+  { id: "lb_4", name: "David Kim",       avatar: "DK", points: 2450, levelTitle: "Advocate"      },
+  { id: "lb_5", name: "Jordan Lee",      avatar: "JL", points: 1850, levelTitle: "Contributor"   },
+]
+
 export interface InstitutionalMetrics {
   totalActions: number
   totalParticipants: number

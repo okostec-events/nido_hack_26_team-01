@@ -41,8 +41,11 @@ export function MobileNav({ activeTab, onTabChange }: MobileNavProps) {
               )}
             >
               {isSubmit ? (
-                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg">
-                  <Icon className="w-6 h-6 text-primary-foreground" />
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                    <Icon className="w-6 h-6 text-primary-foreground" />
+                  </div>
+                  <span className="text-[10px] font-medium text-primary">Log</span>
                 </div>
               ) : (
                 <>

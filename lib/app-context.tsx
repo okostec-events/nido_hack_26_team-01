@@ -7,9 +7,11 @@ import {
   recentActions,
   levelTiers,
   actionCategories,
+  mockLeaderboard,
   User,
   ImpactMetrics,
   Action,
+  LeaderboardEntry,
 } from "@/lib/data"
 
 // Fixed impact values per category — deterministic for a reliable demo
@@ -33,9 +35,17 @@ function computeLevel(points: number) {
   return {
     level: tier.level,
     levelTitle: tier.title,
-    // pointsToNextLevel = the ceiling of the current tier
     pointsToNextLevel: tier.maxPoints ?? points + 1000,
   }
+}
+
+function makeAvatar(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase()
 }
 
 export interface AddActionResult {
@@ -43,21 +53,52 @@ export interface AddActionResult {
   leveledUp: boolean
   newLevelTitle?: string
   impact: { co2?: number; water?: number; waste?: number; community?: number }
+  rankBefore: number
+  rankAfter: number
 }
 
 interface AppState {
   user: User
   impact: ImpactMetrics
   actions: Action[]
+  leaderboard: LeaderboardEntry[]
   addAction: (category: string, title: string, description: string) => AddActionResult
 }
 
 const AppContext = createContext<AppState | null>(null)
 
-export function AppProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User>(currentUser)
+interface AppProviderProps {
+  children: ReactNode
+  userName: string
+  userEmail: string
+}
+
+export function AppProvider({ children, userName, userEmail }: AppProviderProps) {
+  // Build the initial user from sign-up data, keeping demo points/level
+  const initialUser: User = {
+    ...currentUser,
+    name: userName || currentUser.name,
+    email: userEmail || currentUser.email,
+    avatar: makeAvatar(userName || currentUser.name),
+  }
+
+  const [user, setUser] = useState<User>(initialUser)
   const [impact, setImpact] = useState<ImpactMetrics>(userImpact)
   const [actions, setActions] = useState<Action[]>(recentActions)
+
+  // Seed the leaderboard: inject the current user and sort by points
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(() =>
+    [
+      ...mockLeaderboard,
+      {
+        id: initialUser.id,
+        name: initialUser.name,
+        avatar: initialUser.avatar,
+        points: initialUser.totalPoints,
+        levelTitle: initialUser.levelTitle,
+      },
+    ].sort((a, b) => b.points - a.points)
+  )
 
   function addAction(category: string, title: string, description: string): AddActionResult {
     const categoryMeta = actionCategories.find((c) => c.id === category)
@@ -92,11 +133,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     setActions((prev) => [newAction, ...prev])
 
-    return { points, leveledUp, newLevelTitle: leveledUp ? levelTitle : undefined, impact: impactDelta }
+    // Calculate rank change and update leaderboard
+    const oldRank = leaderboard.findIndex((e) => e.id === user.id) + 1
+    const newBoard = leaderboard
+      .map((entry) =>
+        entry.id === user.id
+          ? { ...entry, points: newPoints, levelTitle }
+          : entry
+      )
+      .sort((a, b) => b.points - a.points)
+    const newRank = newBoard.findIndex((e) => e.id === user.id) + 1
+    setLeaderboard(newBoard)
+
+    return { points, leveledUp, newLevelTitle: leveledUp ? levelTitle : undefined, impact: impactDelta, rankBefore: oldRank, rankAfter: newRank }
   }
 
   return (
-    <AppContext.Provider value={{ user, impact, actions, addAction }}>
+    <AppContext.Provider value={{ user, impact, actions, leaderboard, addAction }}>
       {children}
     </AppContext.Provider>
   )

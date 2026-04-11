@@ -64,13 +64,51 @@ export function Analytics() {
       {/* Header */}
       <div>
         <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-          Organization View
+          Santiago, Chile
         </span>
-        <h1 className="text-xl font-semibold text-foreground mt-1">Impact Overview</h1>
+        <h1 className="text-xl font-semibold text-foreground mt-1">Community Impact</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Aggregate data across all participants
+          Real actions. Measurable impact.
         </p>
       </div>
+
+      {/* Community Impact Hero — Big Numbers */}
+      <Card className="p-5 bg-primary/8 border-primary/20">
+        <p className="text-[10px] font-semibold text-primary uppercase tracking-widest mb-4">
+          Total Impact
+        </p>
+        <div className="grid grid-cols-2 gap-y-5 gap-x-4">
+          <div>
+            <p className="text-4xl font-black text-primary leading-none">
+              {(institutionalMetrics.totalCO2Saved / 1000).toFixed(1)}
+              <span className="text-xl font-normal text-muted-foreground ml-1">t</span>
+            </p>
+            <p className="text-xs font-semibold text-foreground mt-1.5">CO₂ Saved</p>
+          </div>
+          <div>
+            <p className="text-4xl font-black text-chart-2 leading-none">
+              {(institutionalMetrics.totalWaterSaved / 1000).toFixed(0)}
+              <span className="text-xl font-normal text-muted-foreground ml-1">m³</span>
+            </p>
+            <p className="text-xs font-semibold text-foreground mt-1.5">Water Saved</p>
+          </div>
+          <div>
+            <p className="text-4xl font-black text-foreground leading-none">
+              {institutionalMetrics.totalActions.toLocaleString()}
+            </p>
+            <p className="text-xs font-medium text-muted-foreground mt-1.5">Total Actions</p>
+          </div>
+          <div>
+            <p className="text-4xl font-black text-foreground leading-none">
+              {institutionalMetrics.totalParticipants.toLocaleString()}
+            </p>
+            <p className="text-xs font-medium text-muted-foreground mt-1.5">Participants</p>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-4 pt-3 border-t border-border/50">
+          {institutionalMetrics.engagementRate}% engagement · above platform average
+        </p>
+      </Card>
 
       {/* 4 primary metric cards */}
       <div className="grid grid-cols-2 gap-3">
@@ -87,7 +125,7 @@ export function Analytics() {
                   <span className="text-[10px] font-medium text-chart-1">{m.trend}</span>
                 </div>
               </div>
-              <p className="text-2xl font-semibold text-foreground leading-none mb-1">
+              <p className="text-3xl font-bold text-foreground leading-none mb-1">
                 {m.value}
               </p>
               <p className="text-xs text-muted-foreground">{m.label}</p>
